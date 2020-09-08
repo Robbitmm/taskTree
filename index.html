@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="style.css" />
+        <script language="javascript" type="text/javascript" src="buttons.js"></script>
+        
+        <title>Item Tree</title>
+    </head>
+
+    <body onload="TreeMenu()">
+
+        <h1 id="title" ondblclick="ChangeName()">Tarefas</h1>
+
+        <ul id="tree" class="tree">
+            <li id="Btn-Level-1" style="list-style-type: none;">
+                <button class="Btn FirstAdd" value="AddBtn-1" onclick="AddItem(this.value)">
+                    Novo Item
+                </button>
+            </li>
+        </ul>
+    </body>
+</html>

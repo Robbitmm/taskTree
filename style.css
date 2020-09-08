@@ -1,0 +1,51 @@
+.tree span:hover{
+    font-weight: bold;
+    color: black;
+}
+
+.tree span{
+    color: grey;
+    cursor: pointer;
+    font-size: 20px;
+}
+
+input{
+    font-size: 20px;
+}
+
+.Btn{
+    background: transparent;
+    font-size: 20px;
+    border-radius: 1px;
+    padding: 0;
+}
+
+.FirstAdd{
+    font-size: 17px;
+    margin-top: 15px;
+}
+
+.ItemBtn{
+    border: none;
+    color: grey;
+    margin-left: 10px;
+}
+
+.Btn:hover{
+    color: black;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.done:hover{
+    color: blue;
+}
+
+.remove:hover{
+    color: red;
+}
+
+.progress{
+    margin-left: 10px;
+    color: grey;
+}
