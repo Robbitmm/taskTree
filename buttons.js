@@ -7,7 +7,8 @@
   }
 
     // catch clicks on whole tree
-  tree.onclick = event => {
+  tree.onclick = function(event) {
+
     if (event.target.tagName != 'SPAN') {
       return;
     }
@@ -21,11 +22,14 @@
 
 function AddItem(){
   target = event.target;
+  //console.log("step 1: "+target.value);
 
   Ulparent = target.closest('ul');
   Liparent = target.closest('li');
+  //console.log("step 2: Ok");
 
   NewItem = document.createElement('li');//Create new Item
+  //NewItem.innerHTML = 'Item ' + Ulparent.childElementCount; //Nomeia o item de acordo com sua posição (número)
 
   input = document.createElement('input');
   NewItem.append(input);
@@ -42,9 +46,11 @@ function AddItem(){
   input.onblur = function(){
     //Change name
     NewItem.setAttribute('id', input.value)
+    console.log(input.value);
     span.innerHTML = input.value;
 
     input.remove();
+    console.log("removed");
 
     //Add button
     addBtn = createBtn('add', NewItem);
@@ -65,6 +71,9 @@ function AddItem(){
 }
 
 function AddSubLevel(){
+  console.log('Add Second Level');
+  span = document.createElement('span');
+  span.setAttribute('ondblclick', 'ChangeName()');
 
   UlChild = document.createElement('ul');
   LiChild = document.createElement('li');
@@ -75,8 +84,7 @@ function AddSubLevel(){
 
   ParentContainer.append(UlChild);
   UlChild.append(LiChild);
-  //LiChild.append(span);
-  create('span', LiChild);
+  LiChild.append(span);
 
   LiChild.append(LiName);
 
@@ -84,9 +92,11 @@ function AddSubLevel(){
 
   LiName.onblur = function(){
     LiChild.setAttribute('id', LiName.value)
+    console.log(LiName.value);
     span.innerHTML = LiName.value;
 
-    LiName.remove();//Remove the input
+    LiName.remove();
+    console.log("removed");
 
     //Add button
     createBtn('add', LiChild);
@@ -98,7 +108,11 @@ function AddSubLevel(){
     createBtn('remove', LiChild)
 
     //Percentage
-    Percentage(LiChild);
+    progress = document.createElement('label');
+    progress.setAttribute('class', 'Btn progress');
+
+    progress.innerHTML = '(0%)'
+    LiChild.append(progress);
   }
 }
 
@@ -114,13 +128,17 @@ function ChangeName(){
 }
 
 function CheckTask(){
+  //console.log("check Test");
+
   checked = event.target;
   addbutton = checked.previousSibling;
   span = addbutton.previousSibling;
-  progress = checked.nextSibling.nextSibling;
+  close = checked.nextSibling;
+  progress = close.nextSibling;
   progress.innerHTML = '(100%)';
 
   if(checked.classList.contains('Done')){
+    //console.log("romoveded line");
     span.removeAttribute('style');
     checked.classList.remove('Done');
     progress.textContent = Progress();
@@ -138,26 +156,21 @@ function RemoveTask(){
   Li.remove();
 }
 
-function Percentage(place){
-  progress = document.createElement('label');
-  progress.setAttribute('class', 'Btn progress');
-
-  progress.innerHTML = '(0%)'
-  place.append(progress);
-}
-
 function Progress(){
   LiGet = event.target.closest('li');
   InsideUl = LiGet.getElementsByTagName('ul');
   InsideUl.child
+  //checkedKids = InsideUl.getElementsByClassName('Done');
 
   counter = InsideUl.length;
+  console.log(counter); 
 
   if(counter == 0){
     return '(0%)';
   }else{
-    kids = doneKids();
+    doneKids();
     result = (100/counter);
+    //console.log(result);
     return `(${result}%)`
   }
 }
@@ -173,15 +186,6 @@ function doneKids(){
     LiGet.setAttribute('style', 'text-decoration: line-through');
     LiGet.classList.add('Done');
   };
-}
-
-function create(name, place){
-  if(name == 'span'){
-    span = document.createElement('span');
-    span.setAttribute('ondblclick', 'ChangeName()');
-  }
-
-  return place.append(name);
 }
 
 function createBtn(name, place){
