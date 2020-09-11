@@ -8,7 +8,6 @@
 
     // catch clicks on whole tree
   tree.onclick = function(event) {
-
     if (event.target.tagName != 'SPAN') {
       return;
     }
@@ -22,97 +21,36 @@
 
 function AddItem(){
   target = event.target;
-  //console.log("step 1: "+target.value);
 
   Ulparent = target.closest('ul');
   Liparent = target.closest('li');
-  //console.log("step 2: Ok");
 
-  NewItem = document.createElement('li');//Create new Item
-  //NewItem.innerHTML = 'Item ' + Ulparent.childElementCount; //Nomeia o item de acordo com sua posição (número)
+  NewItem = document.createElement('li');
 
-  input = document.createElement('input');
-  NewItem.append(input);
-  span = document.createElement('span');
-  span.setAttribute('ondblclick', 'ChangeName()');
-
-  NewItem.prepend(span);
-  span.append(span.nextSibling);
+  input = createContent().input(NewItem);//Create input and append to NewItem
+  span = createContent().span(this.nextSibling, NewItem);//Create span and append to nextSibling and preppend to NewItem
 
   Ulparent.insertBefore(NewItem, Liparent);
   
   input.focus();
 
   input.onblur = function(){
-    //Change name
-    NewItem.setAttribute('id', input.value)
-    console.log(input.value);
-    span.innerHTML = input.value;
-
-    input.remove();
-    console.log("removed");
-
-    //Add button
-    addBtn = createBtn('add', NewItem);
-  
-    //Done Button
-    doneBtn = createBtn('done', NewItem)
-  
-    //Remove Button
-    removeBtn = createBtn('remove', NewItem)
-
-    //Percentage
-    progress = document.createElement('label');
-    progress.setAttribute('class', 'Btn progress');
-
-    progress.innerHTML = '(0%)'
-    NewItem.append(progress);
+    inputOnBlur(NewItem, input, span);
   }
 }
 
 function AddSubLevel(){
-  console.log('Add Second Level');
-  span = document.createElement('span');
-  span.setAttribute('ondblclick', 'ChangeName()');
-
-  UlChild = document.createElement('ul');
-  LiChild = document.createElement('li');
-  LiName = document.createElement('input');
-  LiName.setAttribute('type', 'text');
-
   ParentContainer = event.target.closest('li');
 
-  ParentContainer.append(UlChild);
-  UlChild.append(LiChild);
-  LiChild.append(span);
+  UlChild = createContent().ul(ParentContainer);//Create ul and append to ParentContainer
+  NewItem = createContent().li(UlChild);//Create li and append to UlChild
+  input = createContent().input(NewItem);//Create input and append to NewItem
+  span = createContent().span(this.nextSibling, NewItem);//Create span and append to nextSibling and preppend to NewItem
 
-  LiChild.append(LiName);
+  input.focus();
 
-  LiName.focus();
-
-  LiName.onblur = function(){
-    LiChild.setAttribute('id', LiName.value)
-    console.log(LiName.value);
-    span.innerHTML = LiName.value;
-
-    LiName.remove();
-    console.log("removed");
-
-    //Add button
-    createBtn('add', LiChild);
-
-    //Done Button
-    createBtn('done', LiChild)
-  
-    //Remove Button
-    createBtn('remove', LiChild)
-
-    //Percentage
-    progress = document.createElement('label');
-    progress.setAttribute('class', 'Btn progress');
-
-    progress.innerHTML = '(0%)'
-    LiChild.append(progress);
+  input.onblur = function(){
+    inputOnBlur(NewItem, input, span);
   }
 }
 
@@ -125,20 +63,18 @@ function ChangeName(){
     H1 = document.getElementById("title").textContent;
     document.title = H1;
   }
+  //SendDataToServer();
 }
 
 function CheckTask(){
-  //console.log("check Test");
-
   checked = event.target;
   addbutton = checked.previousSibling;
   span = addbutton.previousSibling;
-  close = checked.nextSibling;
-  progress = close.nextSibling;
-  progress.innerHTML = '(100%)';
+  //close = checked.nextSibling;
+  //progress = close.nextSibling;
+  //progress.innerHTML = '(100%)';
 
   if(checked.classList.contains('Done')){
-    //console.log("romoveded line");
     span.removeAttribute('style');
     checked.classList.remove('Done');
     progress.textContent = Progress();
@@ -166,12 +102,11 @@ function Progress(){
   console.log(counter); 
 
   if(counter == 0){
-    return '(0%)';
+    //return '(0%)';
   }else{
     doneKids();
-    result = (100/counter);
-    //console.log(result);
-    return `(${result}%)`
+    //result = (100/counter);
+    //return `(${result}%)`
   }
 }
 
@@ -188,31 +123,93 @@ function doneKids(){
   };
 }
 
-function createBtn(name, place){
+function create(){
   button = document.createElement('button');
 
-  if(name == 'add'){
-    button.setAttribute('class', 'Btn ItemBtn');
-    button.innerHTML = "+";
-
-    button.onclick = function (){
+  return {
+    addBtn: (place) => {
+      button.setAttribute('class', 'Btn ItemBtn');
+      button.innerHTML = "+";
+  
+      button.onclick = function (){
       AddSubLevel();
+      }
+      place.append(button);
+    },
+  
+    doneBtn: (place) => {
+      button.setAttribute('class', 'Btn ItemBtn done');
+      button.innerHTML = "&check;"; //Display check symbol
+  
+      button.onclick = function (){
+        CheckTask();
+      }
+      place.append(button);
+    },
+  
+    removeBtn: (place) => {
+      button.setAttribute('class', 'Btn ItemBtn remove');
+      button.innerHTML = "x";
+      button.onclick = function (){
+        RemoveTask();
+      };
+      place.append(button);
     }
-  }else if(name == 'done'){
-    button.setAttribute('class', 'Btn ItemBtn done');
-  
-    button.onclick = function (){
-      CheckTask();
-    };
-    button.innerHTML = "&check;"; //Display check symbol
-
-  }else if(name == 'remove'){
-    button.setAttribute('class', 'Btn ItemBtn remove');
-  
-    button.onclick = function (){
-      RemoveTask();
-    };
-    button.innerHTML = "x";
   }
-  return place.append(button); 
+}
+
+function inputOnBlur(place, input, span){
+  //Change name
+  place.setAttribute('id', input.value)
+  span.innerHTML = input.value;
+
+  input.remove();
+
+  create().addBtn(place);
+  create().doneBtn(place);
+  create().removeBtn(place);
+
+  //Percentage
+  progress = document.createElement('label');
+  progress.setAttribute('class', 'Btn progress');
+  //progress.innerHTML = '(0%)'
+  place.append(progress);  
+}
+
+function createContent(){
+  return {
+    input: (placeToAppend) => {
+      input = document.createElement('input');
+      input.setAttribute('ondblclick', 'ChangeName()');
+
+      placeToAppend.append(input);
+      return input;
+    },
+    ul: (placeToAppend) => {
+      ul = document.createElement('ul');
+      ul.setAttribute('ondblclick', 'ChangeName()');
+
+      placeToAppend.append(ul);
+      return ul;
+    },
+    li: (placeToAppend) => {
+      li = document.createElement('li');
+      li.setAttribute('ondblclick', 'ChangeName()');
+
+      placeToAppend.append(li);
+      return li;
+    },
+    span: (placeToAppend, placeToPreppend) => {
+      span = document.createElement('span');
+      span.setAttribute('ondblclick', 'ChangeName()');
+      
+      if(placeToAppend != undefined){
+        placeToAppend.append(span);
+
+      }else if(placeToPreppend != undefined){
+        placeToPreppend.prepend(span);
+      }
+      return span;
+    },
+  }
 }
