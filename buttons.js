@@ -1,34 +1,34 @@
 ﻿function TreeMenu(){
-  let span = document.createElement('span');
+  /*for (let li of tree.querySelectorAll('li')) {
+    let span = document.createElement('span');
+    li.prepend(span);
+    span.append(span.nextSibling); // move the text node into span
+  }*/
 
-  for (let li of tree.querySelectorAll('li')){
-      li.prepend(span);
-      span.append(span.nextSibling); // move the text node into span
-  }
-
-    // catch clicks on whole tree
+  // catch clicks on whole tree
   tree.onclick = function(event) {
+    let childrenContainer = event.target.parentNode.querySelector('ul');
+
     if (event.target.tagName != 'SPAN') {
       return;
     }
 
-    let childrenContainer = event.target.parentNode.querySelector('ul');
     if (!childrenContainer) return; // no children
 
     childrenContainer.hidden = !childrenContainer.hidden;
+    
   }
 }
 
 function AddItem(){
-  target = event.target;
+  let target = event.target,
+      Ulparent = target.closest('ul'),
+      Liparent = target.closest('li');
 
-  Ulparent = target.closest('ul');
-  Liparent = target.closest('li');
-
-  NewItem = document.createElement('li');
-
-  input = createContent().input(NewItem);//Create input and append to NewItem
-  span = createContent().span(this.nextSibling, NewItem);//Create span and append to nextSibling and preppend to NewItem
+  const NewItem = document.createElement('li'),
+        contentCreator = createContent(),
+        input = contentCreator.input(NewItem),//Create input and append to NewItem
+        span = contentCreator.span(this.nextSibling, NewItem);//Create span and append to nextSibling and preppend to NewItem
 
   Ulparent.insertBefore(NewItem, Liparent);
   
@@ -40,12 +40,19 @@ function AddItem(){
 }
 
 function AddSubLevel(){
-  ParentContainer = event.target.closest('li');
+  let ParentContainer = event.target.closest('li');
 
-  UlChild = createContent().ul(ParentContainer);//Create ul and append to ParentContainer
-  NewItem = createContent().li(UlChild);//Create li and append to UlChild
-  input = createContent().input(NewItem);//Create input and append to NewItem
-  span = createContent().span(this.nextSibling, NewItem);//Create span and append to nextSibling and preppend to NewItem
+  const contentCreator =  createContent();
+
+  if(ParentContainer.childNodes[5] == undefined){//if the ul is not defined
+    var UlChild = contentCreator.ul(ParentContainer);//Create ul and append to ParentContainer
+  }else{//if the ul has already been defined
+    var UlChild = ParentContainer.parentNode.querySelector('ul');//select the ul child
+  }
+  
+  const NewItem = contentCreator.li(UlChild),//Create li and append to UlChild
+        input = contentCreator.input(NewItem),//Create input and append to NewItem
+        span = contentCreator.span(this.nextSibling, NewItem);//Create span and append to nextSibling and preppend to NewItem
 
   input.focus();
 
@@ -58,18 +65,19 @@ function ChangeName(){
   event.target.contentEditable = true;
 
   event.target.onblur = function(){
+    let H1 = document.getElementById("title").textContent;
+
     event.target.contentEditable = false;
 
-    H1 = document.getElementById("title").textContent;
     document.title = H1;
   }
   //SendDataToServer();
 }
 
 function CheckTask(){
-  checked = event.target;
-  addbutton = checked.previousSibling;
-  span = addbutton.previousSibling;
+  let checked = event.target,
+      addbutton = checked.previousSibling,
+      span = addbutton.previousSibling;
   //close = checked.nextSibling;
   //progress = close.nextSibling;
   //progress.innerHTML = '(100%)';
@@ -77,54 +85,58 @@ function CheckTask(){
   if(checked.classList.contains('Done')){
     span.removeAttribute('style');
     checked.classList.remove('Done');
-    progress.textContent = Progress();
+    //progress.textContent = Progress();
+    Progress();
     return;
   }
 
   span.setAttribute('style', 'text-decoration: line-through');
-  progress.textContent = Progress();
+  //progress.textContent = Progress();
+  Progress();
 
   checked.classList.add('Done');
 }
 
 function RemoveTask(){
-  Li = event.target.closest('li');
+  const Li = event.target.closest('li');
   Li.remove();
 }
 
 function Progress(){
-  LiGet = event.target.closest('li');
-  InsideUl = LiGet.getElementsByTagName('ul');
+  const LiGet = event.target.closest('li'),
+        InsideUl = LiGet.getElementsByTagName('ul');
+
+  let counter = InsideUl.length;
+
   InsideUl.child
   //checkedKids = InsideUl.getElementsByClassName('Done');
 
-  counter = InsideUl.length;
   console.log(counter); 
 
   if(counter == 0){
     //return '(0%)';
   }else{
-    doneKids();
+    doneKids(LiGet, counter);
     //result = (100/counter);
     //return `(${result}%)`
   }
 }
 
-function doneKids(){
+function doneKids(LiGet, counter){
   if(LiGet.classList.contains('Done')){
     LiGet.removeAttribute('style');
     LiGet.classList.remove('Done');
     return;
   }
 
-  for (var i = 0; i < counter; i++) {
+  for (let i = 0; i < counter; i++) {
     LiGet.setAttribute('style', 'text-decoration: line-through');
     LiGet.classList.add('Done');
   };
 }
 
 function create(){
-  button = document.createElement('button');
+  const button = document.createElement('button');
 
   return {
     addBtn: (place) => {
@@ -132,7 +144,7 @@ function create(){
       button.innerHTML = "+";
   
       button.onclick = function (){
-      AddSubLevel();
+        AddSubLevel();
       }
       place.append(button);
     },
@@ -159,6 +171,9 @@ function create(){
 }
 
 function inputOnBlur(place, input, span){
+  //Percentage
+  const progress = document.createElement('label');
+
   //Change name
   place.setAttribute('id', input.value)
   span.innerHTML = input.value;
@@ -170,7 +185,6 @@ function inputOnBlur(place, input, span){
   create().removeBtn(place);
 
   //Percentage
-  progress = document.createElement('label');
   progress.setAttribute('class', 'Btn progress');
   //progress.innerHTML = '(0%)'
   place.append(progress);  
@@ -179,28 +193,28 @@ function inputOnBlur(place, input, span){
 function createContent(){
   return {
     input: (placeToAppend) => {
-      input = document.createElement('input');
+      const input = document.createElement('input');
       input.setAttribute('ondblclick', 'ChangeName()');
 
       placeToAppend.append(input);
       return input;
     },
     ul: (placeToAppend) => {
-      ul = document.createElement('ul');
+      const ul = document.createElement('ul');
       ul.setAttribute('ondblclick', 'ChangeName()');
 
       placeToAppend.append(ul);
       return ul;
     },
     li: (placeToAppend) => {
-      li = document.createElement('li');
+      const li = document.createElement('li');
       li.setAttribute('ondblclick', 'ChangeName()');
 
       placeToAppend.append(li);
       return li;
     },
     span: (placeToAppend, placeToPreppend) => {
-      span = document.createElement('span');
+      const span = document.createElement('span');
       span.setAttribute('ondblclick', 'ChangeName()');
       
       if(placeToAppend != undefined){
