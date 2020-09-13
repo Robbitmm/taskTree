@@ -1,11 +1,5 @@
 ﻿function TreeMenu(){
-  /*for (let li of tree.querySelectorAll('li')) {
-    let span = document.createElement('span');
-    li.prepend(span);
-    span.append(span.nextSibling); // move the text node into span
-  }*/
-
-  // catch clicks on whole tree
+  //Catch clicks on whole tree
   tree.onclick = function(event) {
     let childrenContainer = event.target.parentNode.querySelector('ul');
 
@@ -28,7 +22,7 @@ function AddItem(){
   const NewItem = document.createElement('li'),
         contentCreator = createContent(),
         input = contentCreator.input(NewItem),//Create input and append to NewItem
-        span = contentCreator.span(this.nextSibling, NewItem);//Create span and append to nextSibling and preppend to NewItem
+        span = contentCreator.span(event.nextSibling, NewItem);//Create span and append to nextSibling and preppend to NewItem
 
   Ulparent.insertBefore(NewItem, Liparent);
   
@@ -49,7 +43,7 @@ function AddSubLevel(){
   }else{//if the ul has already been defined
     var UlChild = ParentContainer.parentNode.querySelector('ul');//select the ul child
   }
-  
+
   const NewItem = contentCreator.li(UlChild),//Create li and append to UlChild
         input = contentCreator.input(NewItem),//Create input and append to NewItem
         span = contentCreator.span(this.nextSibling, NewItem);//Create span and append to nextSibling and preppend to NewItem
@@ -71,30 +65,26 @@ function ChangeName(){
 
     document.title = H1;
   }
-  //SendDataToServer();
 }
 
 function CheckTask(){
   let checked = event.target,
-      addbutton = checked.previousSibling,
-      span = addbutton.previousSibling;
-  //close = checked.nextSibling;
-  //progress = close.nextSibling;
-  //progress.innerHTML = '(100%)';
+      span = checked.parentNode.querySelector('span');
+
+  //var progress = checked.parentNode.querySelector('label');
 
   if(checked.classList.contains('Done')){
     span.removeAttribute('style');
     checked.classList.remove('Done');
-    //progress.textContent = Progress();
-    Progress();
+    doneKids();
     return;
   }
 
   span.setAttribute('style', 'text-decoration: line-through');
-  //progress.textContent = Progress();
-  Progress();
+  doneKids();
 
   checked.classList.add('Done');
+  
 }
 
 function RemoveTask(){
@@ -102,27 +92,12 @@ function RemoveTask(){
   Li.remove();
 }
 
-function Progress(){
+function doneKids(){
   const LiGet = event.target.closest('li'),
         InsideUl = LiGet.getElementsByTagName('ul');
 
   let counter = InsideUl.length;
 
-  InsideUl.child
-  //checkedKids = InsideUl.getElementsByClassName('Done');
-
-  console.log(counter); 
-
-  if(counter == 0){
-    //return '(0%)';
-  }else{
-    doneKids(LiGet, counter);
-    //result = (100/counter);
-    //return `(${result}%)`
-  }
-}
-
-function doneKids(LiGet, counter){
   if(LiGet.classList.contains('Done')){
     LiGet.removeAttribute('style');
     LiGet.classList.remove('Done');
@@ -137,7 +112,7 @@ function doneKids(LiGet, counter){
 
 function create(){
   const button = document.createElement('button');
-
+  
   return {
     addBtn: (place) => {
       button.setAttribute('class', 'Btn ItemBtn');
