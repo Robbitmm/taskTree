@@ -1,5 +1,5 @@
 ﻿function TreeMenu(){
-  //Catch clicks on whole tree
+  // Catch clicks on whole tree
   tree.onclick = function(event) {
     let childrenContainer = event.target.parentNode.querySelector('ul');
 
@@ -7,7 +7,7 @@
       return;
     }
 
-    if (!childrenContainer) return; // no children
+    if (!childrenContainer) return; // No children
 
     childrenContainer.hidden = !childrenContainer.hidden;
     
@@ -21,8 +21,8 @@ function AddItem(){
 
   const NewItem = document.createElement('li'),
         contentCreator = createContent(),
-        input = contentCreator.input(NewItem),//Create input and append to NewItem
-        span = contentCreator.span(event.nextSibling, NewItem);//Create span and append to nextSibling and preppend to NewItem
+        input = contentCreator.input(NewItem),// Create input and append to NewItem
+        span = contentCreator.span(event.nextSibling, NewItem);// Create span and append to nextSibling and preppend to NewItem
 
   Ulparent.insertBefore(NewItem, Liparent);
   
@@ -34,19 +34,20 @@ function AddItem(){
 }
 
 function AddSubLevel(){
-  let ParentContainer = event.target.closest('li');
+  let ParentContainer = event.target.closest('li'),
+      ParentSpan = event.target.parentNode.querySelector('span');// Select the closest span
 
   const contentCreator =  createContent();
 
-  if(ParentContainer.childNodes[5] == undefined){//if the ul is not defined
-    var UlChild = contentCreator.ul(ParentContainer);//Create ul and append to ParentContainer
-  }else{//if the ul has already been defined
-    var UlChild = ParentContainer.parentNode.querySelector('ul');//select the ul child
+  if(ParentContainer.childNodes[5] == undefined){// if the ul is not defined
+    var UlChild = contentCreator.ul(ParentContainer);// Create ul and append to ParentContainer
+  }else if (ParentContainer.childNodes[5].nodeName == "UL"){// if the ul has already been defined
+    var UlChild = ParentSpan.parentNode.querySelector('ul');// select the ul child
   }
 
-  const NewItem = contentCreator.li(UlChild),//Create li and append to UlChild
-        input = contentCreator.input(NewItem),//Create input and append to NewItem
-        span = contentCreator.span(this.nextSibling, NewItem);//Create span and append to nextSibling and preppend to NewItem
+  const NewItem = contentCreator.li(UlChild),// Create li and append to UlChild
+        input = contentCreator.input(NewItem),// Create input and append to NewItem
+        span = contentCreator.span(this.nextSibling, NewItem);// Create span and append to nextSibling and preppend to NewItem
 
   input.focus();
 
@@ -126,7 +127,7 @@ function create(){
   
     doneBtn: (place) => {
       button.setAttribute('class', 'Btn ItemBtn done');
-      button.innerHTML = "&check;"; //Display check symbol
+      button.innerHTML = "&check;"; // Display check symbol
   
       button.onclick = function (){
         CheckTask();
@@ -146,10 +147,10 @@ function create(){
 }
 
 function inputOnBlur(place, input, span){
-  //Percentage
+  // Percentage
   const progress = document.createElement('label');
 
-  //Change name
+  // Change name
   place.setAttribute('id', input.value)
   span.innerHTML = input.value;
 
@@ -159,7 +160,7 @@ function inputOnBlur(place, input, span){
   create().doneBtn(place);
   create().removeBtn(place);
 
-  //Percentage
+  // Percentage
   progress.setAttribute('class', 'Btn progress');
   //progress.innerHTML = '(0%)'
   place.append(progress);  
